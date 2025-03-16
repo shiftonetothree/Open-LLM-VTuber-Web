@@ -69,4 +69,4 @@ setInterval(async ()=>{
     if(messageList.length === 0){
         messageList.push("讲个故事")
     }
-},60000)
+},2*60*1000)
