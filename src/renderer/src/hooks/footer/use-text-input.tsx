@@ -24,7 +24,7 @@ export function useTextInput() {
     const finalMessage = message?message:inputText.trim()
     if (!finalMessage || !wsContext) return;
     if (aiState === 'thinking-speaking') {
-      return;
+      return "thinking";
       interrupt();
     }
 
@@ -40,6 +40,7 @@ export function useTextInput() {
     setAiState('thinking-speaking');
     if (autoStopMic) stopMic();
     setInputText('');
+    return "success";
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

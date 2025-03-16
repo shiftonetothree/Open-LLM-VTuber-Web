@@ -1,5 +1,5 @@
 // 创建 WebSocket 连接
-const socket = new WebSocket('ws://127.0.0.1:8888');
+const socket = new WebSocket('ws://192.168.31.244:8888');
 
 // 连接成功时触发
 socket.addEventListener('open', (event) => {
@@ -30,25 +30,43 @@ export const removeDanmuEvent = (callback)=>{
     }
 }
 
+const messageList: string[] = []
+
 let lastTime = new Date();
 
 // 接收服务器消息
 socket.addEventListener('message', (event) => {
     const content: string = JSON.parse(JSON.parse(event.data).Data).Content;
-    if(content.indexOf("直播间人数")<0 
-        && content.indexOf("总点赞")<0 
-        && content.indexOf("关注了主播")<0
-        && content.indexOf("送出")<0
+    if(
+        true
+        && content.indexOf("当前直播间人数")!=0
+        // && content.indexOf("直播间人数")<0 
+        // && content.indexOf("总点赞")<0 
+        // && content.indexOf("关注了主播")<0
+        // && content.indexOf("送出")<0
     ){
-        const now = new Date();
-        if(now.getTime() - lastTime.getTime()>5000){
-            lastTime = now;
-            console.log(content)
-            for(const reciver of reciverList){
-                reciver(content)
-            }
-        }
-        
+        messageList.push(content)
     }
     
 });
+
+setInterval(async ()=>{
+    console.log(messageList)
+    if(messageList.length>0){
+        const msg = messageList[0];
+        for(const reciver of reciverList){
+            const result = await reciver(msg)
+            console.log(result)
+            if(result != "thinking"){
+                messageList.splice(messageList.indexOf(msg),1)
+            }
+        }
+    }
+    
+},1000)
+
+setInterval(async ()=>{
+    if(messageList.length === 0){
+        messageList.push("讲个故事")
+    }
+},60000)

@@ -294,8 +294,8 @@ function WebSocketHandler({ children }: { children: React.ReactNode }) {
     handleSend,
   } = useTextInput();
 
-  const reciveDanmu = useCallback((content)=>{
-    handleSend(content)
+  const reciveDanmu = useCallback(async (content)=>{
+    return handleSend(content)
   },[handleSend])
 
   useEffect(()=>{
