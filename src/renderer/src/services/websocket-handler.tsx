@@ -19,6 +19,8 @@ import { AiState, useAiState } from "@/context/ai-state-context";
 import { useLocalStorage } from '@/hooks/utils/use-local-storage';
 import { useGroup } from '@/context/group-context';
 import { useInterrupt } from '@/hooks/utils/use-interrupt';
+import { useTextInput } from '@/hooks/footer/use-text-input';
+import { registerDanmuEvent, removeDanmuEvent } from './websocket-danmu';
 
 function WebSocketHandler({ children }: { children: React.ReactNode }) {
   const [wsState, setWsState] = useState<string>('CLOSED');
@@ -286,6 +288,22 @@ function WebSocketHandler({ children }: { children: React.ReactNode }) {
     baseUrl,
     setBaseUrl,
   }), [wsState, wsUrl, baseUrl]);
+
+  const {
+    // inputText,
+    handleSend,
+  } = useTextInput();
+
+  const reciveDanmu = useCallback((content)=>{
+    handleSend(content)
+  },[handleSend])
+
+  useEffect(()=>{
+    registerDanmuEvent(reciveDanmu);
+    return ()=>{
+      removeDanmuEvent(reciveDanmu);
+    }
+  },[reciveDanmu])
 
   return (
     <WebSocketContext.Provider value={webSocketContextValue}>

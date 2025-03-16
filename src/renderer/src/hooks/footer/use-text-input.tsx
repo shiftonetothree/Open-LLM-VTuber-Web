@@ -20,18 +20,20 @@ export function useTextInput() {
     setInputText(e.target.value);
   };
 
-  const handleSend = async () => {
-    if (!inputText.trim() || !wsContext) return;
+  const handleSend = async (message?: string) => {
+    const finalMessage = message?message:inputText.trim()
+    if (!finalMessage || !wsContext) return;
     if (aiState === 'thinking-speaking') {
+      return;
       interrupt();
     }
 
     const images = await captureAllMedia();
 
-    appendHumanMessage(inputText.trim());
+    appendHumanMessage(finalMessage);
     wsContext.sendMessage({
       type: 'text-input',
-      text: inputText.trim(),
+      text: finalMessage,
       images,
     });
 
